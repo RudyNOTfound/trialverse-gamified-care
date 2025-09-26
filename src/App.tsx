@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import JoinPatient from "./pages/JoinPatient";
 import JoinDoctor from "./pages/JoinDoctor";
 import ViewCentres from "./pages/ViewCentres";
+import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
 import FloatingSidebar from "./components/FloatingSidebar";
 import TimePanel from "./components/TimePanel";
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/join-patient" element={<JoinPatient />} />
                 <Route path="/join-doctor" element={<JoinDoctor />} />
                 <Route path="/centres" element={<ViewCentres />} />
+                <Route path="/progress" element={<Progress />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
