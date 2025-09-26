@@ -40,7 +40,7 @@ const TimePanel = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
-      className="fixed top-4 left-80 right-6 z-40"
+      className="w-full p-4"
     >
       <div className="bg-gradient-card backdrop-blur-sm rounded-2xl px-6 py-3 shadow-xl border border-primary/20 glow-primary flex items-center justify-between">
         {/* Live Clock */}

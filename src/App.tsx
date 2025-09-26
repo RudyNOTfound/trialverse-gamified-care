@@ -20,21 +20,28 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="relative min-h-screen">
-          <FloatingSidebar />
+        <div className="min-h-screen flex flex-col">
+          {/* Top Panel */}
           <TimePanel />
           
-          <main className="relative z-10">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/join-patient" element={<JoinPatient />} />
-              <Route path="/join-doctor" element={<JoinDoctor />} />
-              <Route path="/centres" element={<ViewCentres />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
+          {/* Main Content Area */}
+          <div className="flex flex-1">
+            {/* Left Sidebar */}
+            <FloatingSidebar />
+            
+            {/* Main Content */}
+            <main className="flex-1 ml-4">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/join-patient" element={<JoinPatient />} />
+                <Route path="/join-doctor" element={<JoinDoctor />} />
+                <Route path="/centres" element={<ViewCentres />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+          </div>
         </div>
       </BrowserRouter>
     </TooltipProvider>

@@ -48,7 +48,7 @@ const FloatingSidebar = () => {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-      className="fixed left-6 top-6 z-50"
+      className="w-72 p-6 flex-shrink-0"
     >
       <div className="bg-gradient-card backdrop-blur-sm rounded-3xl p-4 shadow-2xl border border-primary/20 glow-primary">
         <motion.div
