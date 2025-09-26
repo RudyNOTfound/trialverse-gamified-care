@@ -2,41 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* TrialVerse Design System - Gamified Clinical Trial Platform
+Warm skin tones with rose and peach gradients for playful, approachable healthcare UI
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Brand Colors - Warm Skin Tones */
+    --background: 17 100% 96%;  /* Very light peachy background */
+    --foreground: 25 15% 25%;   /* Warm dark gray for text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 17 80% 94%;         /* Warm card background */
+    --card-foreground: 25 15% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 17 100% 96%;
+    --popover-foreground: 25 15% 25%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Rose/Pink Theme */
+    --primary: 0 76% 75%;       /* #F28C8C rose */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 353 89% 81%; /* #F9A7B0 lighter rose */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm Skin Tones */
+    --secondary: 17 100% 89%;   /* #FFD6C9 warm skin */
+    --secondary-foreground: 25 15% 25%;
+    --secondary-accent: 350 100% 91%; /* #FADADD pink skin */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Accent - Peach Gradients */
+    --accent: 32 100% 83%;      /* #FFCBA4 peach */
+    --accent-foreground: 25 15% 25%;
+    --accent-bright: 353 89% 81%; /* #F9A7B0 bright accent */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 17 60% 92%;
+    --muted-foreground: 25 10% 45%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 17 50% 88%;
+    --input: 17 50% 90%;
+    --ring: 0 76% 75%;
 
-    --radius: 0.5rem;
+    --radius: 1rem;  /* More rounded for playful feel */
+
+    /* Gamification Colors */
+    --gold: 45 100% 60%;        /* Achievement gold */
+    --achievement: 280 100% 70%; /* Purple for ranks */
+    --success-glow: 120 100% 50%; /* Green success */
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(32 100% 83%), hsl(353 89% 81%));
+    --gradient-card: linear-gradient(145deg, hsl(17 100% 89%) 0%, hsl(350 100% 91%) 100%);
+    --gradient-glow: linear-gradient(45deg, hsl(0 76% 75%), hsl(353 89% 81%));
+    --gradient-background: linear-gradient(135deg, hsl(17 100% 96%) 0%, hsl(350 100% 94%) 50%, hsl(32 100% 95%) 100%);
+
+    /* Shadows & Glows */
+    --shadow-soft: 0 4px 20px hsl(0 76% 75% / 0.1);
+    --shadow-hover: 0 8px 30px hsl(0 76% 75% / 0.15);
+    --glow-primary: 0 0 20px hsl(0 76% 75% / 0.3);
+    --glow-achievement: 0 0 25px hsl(45 100% 60% / 0.4);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-glow: box-shadow 0.3s ease-in-out;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +86,43 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode maintains warm feeling with deeper tones */
+    --background: 25 20% 8%;
+    --foreground: 17 80% 90%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 25 25% 12%;
+    --card-foreground: 17 80% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 25 25% 12%;
+    --popover-foreground: 17 80% 90%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 0 76% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 353 89% 71%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 25 30% 15%;
+    --secondary-foreground: 17 80% 90%;
+    --secondary-accent: 350 40% 20%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 32 60% 35%;
+    --accent-foreground: 17 80% 90%;
+    --accent-bright: 353 89% 71%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --muted: 25 20% 18%;
+    --muted-foreground: 17 40% 65%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 25 20% 20%;
+    --input: 25 20% 18%;
+    --ring: 0 76% 65%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(32 60% 35%), hsl(353 89% 71%));
+    --gradient-card: linear-gradient(145deg, hsl(25 30% 15%) 0%, hsl(350 40% 20%) 100%);
+    --gradient-glow: linear-gradient(45deg, hsl(0 76% 65%), hsl(353 89% 71%));
+    --gradient-background: linear-gradient(135deg, hsl(25 20% 8%) 0%, hsl(350 30% 12%) 50%, hsl(32 40% 10%) 100%);
   }
 }
 
@@ -101,5 +133,116 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background: var(--gradient-background);
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  /* Gradient Utilities */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .bg-gradient-glow {
+    background: var(--gradient-glow);
+  }
+
+  /* Glow Effects */
+  .glow-primary {
+    box-shadow: var(--glow-primary);
+  }
+  
+  .glow-achievement {
+    box-shadow: var(--glow-achievement);
+  }
+
+  /* Interactive Elements */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition-smooth);
+  }
+  
+  .shimmer:hover::before {
+    left: 100%;
+  }
+
+  /* Floating Animations */
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .float-delayed {
+    animation: float 6s ease-in-out 2s infinite;
+  }
+
+  /* Pulse Glow */
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 5px hsl(var(--primary) / 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(-3px);
   }
 }

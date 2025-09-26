@@ -22,10 +22,12 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          accent: "hsl(var(--secondary-accent))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -38,6 +40,7 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          bright: "hsl(var(--accent-bright))",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -47,6 +50,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Gamification colors
+        gold: "hsl(var(--gold))",
+        achievement: "hsl(var(--achievement))",
+        success: "hsl(var(--success-glow))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -80,10 +87,86 @@ export default {
             height: "0",
           },
         },
+        // TrialVerse custom animations
+        "float": {
+          "0%, 100%": {
+            transform: "translateY(0px)",
+          },
+          "50%": {
+            transform: "translateY(-10px)",
+          },
+        },
+        "pulse-glow": {
+          "0%": {
+            boxShadow: "0 0 5px hsl(var(--primary) / 0.5)",
+          },
+          "100%": {
+            boxShadow: "0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.6)",
+          },
+        },
+        "shimmer": {
+          "0%": {
+            backgroundPosition: "-200px 0",
+          },
+          "100%": {
+            backgroundPosition: "calc(200px + 100%) 0",
+          },
+        },
+        "sparkle": {
+          "0%, 100%": {
+            opacity: "0",
+            transform: "scale(0)",
+          },
+          "50%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+        },
+        "bounce-subtle": {
+          "0%, 20%, 50%, 80%, 100%": {
+            transform: "translateY(0)",
+          },
+          "40%": {
+            transform: "translateY(-5px)",
+          },
+          "60%": {
+            transform: "translateY(-3px)",
+          },
+        },
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(10px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "scale-bounce": {
+          "0%": {
+            transform: "scale(0.9)",
+          },
+          "50%": {
+            transform: "scale(1.05)",
+          },
+          "100%": {
+            transform: "scale(1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        // TrialVerse custom animations
+        "float": "float 6s ease-in-out infinite",
+        "float-delayed": "float 6s ease-in-out 2s infinite",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite alternate",
+        "shimmer": "shimmer 2s linear infinite",
+        "sparkle": "sparkle 1.5s ease-in-out infinite",
+        "bounce-subtle": "bounce-subtle 2s infinite",
+        "fade-in": "fade-in 0.5s ease-out",
+        "scale-bounce": "scale-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
       },
     },
   },
