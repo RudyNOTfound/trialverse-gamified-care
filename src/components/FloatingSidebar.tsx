@@ -6,6 +6,12 @@ const FloatingSidebar = () => {
   
   const navItems = [
     { 
+      label: "Home", 
+      path: "/", 
+      icon: "🏠",
+      gradient: "from-primary to-primary-glow"
+    },
+    { 
       label: "Register as Doctor", 
       path: "/register?type=doctor", 
       icon: "👨‍⚕️",
@@ -42,7 +48,7 @@ const FloatingSidebar = () => {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-      className="fixed left-6 top-1/2 -translate-y-1/2 z-50"
+      className="fixed left-6 top-6 z-50"
     >
       <div className="bg-gradient-card backdrop-blur-sm rounded-3xl p-4 shadow-2xl border border-primary/20 glow-primary">
         <motion.div
