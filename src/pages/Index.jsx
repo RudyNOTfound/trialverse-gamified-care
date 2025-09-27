@@ -205,20 +205,22 @@ const Index = () => {
             <p className="text-muted-foreground text-lg mb-8">
               Join thousands of participants making medical history while earning rewards
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.href = '/register-doctor'}
                 className="bg-gradient-glow text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-lg transition-all shimmer"
               >
-                Get Started Today 🚀
+                Register as Doctor 👨‍⚕️
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-background/50 text-foreground border-2 border-border px-8 py-4 rounded-2xl font-semibold text-lg hover:border-primary transition-all"
+                onClick={() => window.location.href = '/register-patient'}
+                className="bg-gradient-primary text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-lg transition-all shimmer"
               >
-                Learn More 📖
+                Register as Patient 🏥
               </motion.button>
             </div>
           </div>
