@@ -1,31 +1,64 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 const Progress = () => {
   const navigate = useNavigate();
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [trialDays, setTrialDays] = useState([]);
+  const [patientProgress, setPatientProgress] = useState({ currentLevel: 1, completedLevels: [] });
 
-  // Simulated trial days with Candy Crush-style progression
-  const trialDays = [
-    { day: 1, status: "completed", stars: 3, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 2, status: "completed", stars: 2, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 3, status: "completed", stars: 3, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 4, status: "completed", stars: 1, type: "medium", color: "from-blue-400 to-blue-600" },
-    { day: 5, status: "current", stars: 0, type: "medium", color: "from-primary to-primary-glow" },
-    { day: 6, status: "locked", stars: 0, type: "medium", color: "from-gray-400 to-gray-600" },
-    { day: 7, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 8, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 9, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 10, status: "locked", stars: 0, type: "boss", color: "from-purple-400 to-purple-600" },
-    { day: 11, status: "locked", stars: 0, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 12, status: "locked", stars: 0, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 13, status: "locked", stars: 0, type: "medium", color: "from-blue-400 to-blue-600" },
-    { day: 14, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 15, status: "locked", stars: 0, type: "boss", color: "from-purple-400 to-purple-600" },
-  ];
+  useEffect(() => {
+    // Load trial configuration from doctor
+    const trialConfig = JSON.parse(localStorage.getItem('trialConfig') || '{}');
+    const savedProgress = JSON.parse(localStorage.getItem('patientProgress') || '{"currentLevel": 1, "completedLevels": []}');
+    
+    if (trialConfig.trialDays) {
+      // Generate dynamic trial days based on doctor's input
+      const days = [];
+      for (let i = 1; i <= trialConfig.trialDays; i++) {
+        const isCompleted = savedProgress.completedLevels.includes(i);
+        const isCurrent = i === savedProgress.currentLevel && !isCompleted;
+        const isLocked = i > savedProgress.currentLevel;
+        
+        days.push({
+          day: i,
+          status: isCompleted ? "completed" : (isCurrent ? "current" : "locked"),
+          stars: isCompleted ? Math.floor(Math.random() * 3) + 1 : 0,
+          type: i % 5 === 0 ? "boss" : (i % 3 === 0 ? "hard" : (i % 2 === 0 ? "medium" : "easy")),
+          color: i % 5 === 0 ? "from-purple-400 to-purple-600" : 
+                 (i % 3 === 0 ? "from-red-400 to-red-600" : 
+                 (i % 2 === 0 ? "from-blue-400 to-blue-600" : "from-green-400 to-green-600"))
+        });
+      }
+      setTrialDays(days);
+    }
+    
+    setPatientProgress(savedProgress);
+  }, []);
+
+  const handleCompleteLevel = (dayNum) => {
+    const newCompletedLevels = [...patientProgress.completedLevels, dayNum];
+    const newCurrentLevel = Math.min(dayNum + 1, trialDays.length);
+    
+    const newProgress = {
+      currentLevel: newCurrentLevel,
+      completedLevels: newCompletedLevels
+    };
+    
+    setPatientProgress(newProgress);
+    localStorage.setItem('patientProgress', JSON.stringify(newProgress));
+    setSelectedLevel(null);
+    
+    // Refresh the display
+    window.location.reload();
+  };
+
+  const handleCancelLevel = () => {
+    setSelectedLevel(null);
+  };
 
   const getStatusIcon = (status: string, type: string) => {
     if (status === "completed") return "✅";
@@ -81,19 +114,19 @@ const Progress = () => {
           className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
         >
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-green-500">4</div>
+            <div className="text-2xl font-bold text-green-500">{patientProgress.completedLevels.length}</div>
             <div className="text-sm text-muted-foreground">Days Completed</div>
           </div>
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-gold">9</div>
+            <div className="text-2xl font-bold text-gold">{patientProgress.completedLevels.length * 3}</div>
             <div className="text-sm text-muted-foreground">Stars Earned</div>
           </div>
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-primary">1</div>
+            <div className="text-2xl font-bold text-primary">{patientProgress.currentLevel}</div>
             <div className="text-sm text-muted-foreground">Current Day</div>
           </div>
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-purple-500">11</div>
+            <div className="text-2xl font-bold text-purple-500">{trialDays.length - patientProgress.completedLevels.length}</div>
             <div className="text-sm text-muted-foreground">Days Remaining</div>
           </div>
         </motion.div>
@@ -252,26 +285,64 @@ const Progress = () => {
                     : "Ready to start today's trial activities?"
                   }
                 </p>
-                <div className="space-y-3">
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90"
-                    onClick={() => setSelectedLevel(null)}
-                  >
-                    {trialDays.find(d => d.day === selectedLevel)?.status === "completed" 
-                      ? "Review Results" 
-                      : "Start Day"
-                    }
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => setSelectedLevel(null)}
-                  >
-                    Close
-                  </Button>
-                </div>
+                
+                {trialDays.find(d => d.day === selectedLevel)?.status === "current" && (
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
+                      onClick={() => handleCompleteLevel(selectedLevel)}
+                    >
+                      ✅ Complete Level
+                    </Button>
+                    <Button 
+                      className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold"
+                      onClick={handleCancelLevel}
+                    >
+                      ❌ Cancel
+                    </Button>
+                  </div>
+                )}
+                
+                {trialDays.find(d => d.day === selectedLevel)?.status === "completed" && (
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={() => setSelectedLevel(null)}
+                    >
+                      Review Results
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => setSelectedLevel(null)}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                )}
               </div>
             </motion.div>
+          </motion.div>
+        )}
+
+        {/* No Trial Message */}
+        {trialDays.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-12"
+          >
+            <div className="text-6xl mb-4">🏥</div>
+            <h3 className="text-2xl font-bold mb-4">No Active Trial</h3>
+            <p className="text-muted-foreground mb-6">
+              Please wait for your doctor to create a trial and set the number of days.
+            </p>
+            <Button 
+              variant="outline"
+              onClick={() => navigate("/join-patient")}
+            >
+              Back to Dashboard
+            </Button>
           </motion.div>
         )}
       </div>
