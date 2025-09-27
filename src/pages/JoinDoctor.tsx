@@ -7,28 +7,8 @@ const JoinDoctor = () => {
     trialName: "",
     duration: "",
     participants: "",
-    description: "",
-    trialDays: ""
+    description: ""
   });
-
-  const handleCreateTrial = () => {
-    if (formData.trialDays) {
-      // Store trial configuration in localStorage
-      const trialConfig = {
-        trialDays: parseInt(formData.trialDays),
-        trialName: formData.trialName,
-        createdAt: new Date().toISOString()
-      };
-      localStorage.setItem('trialConfig', JSON.stringify(trialConfig));
-      
-      // Reset patient progress
-      localStorage.removeItem('patientProgress');
-      
-      alert(`Trial created with ${formData.trialDays} days! Patients can now access their progress page.`);
-    } else {
-      alert('Please enter the number of trial days');
-    }
-  };
 
   const tabs = [
     { id: "schedule", label: "Schedule Trial", icon: "📅" },
@@ -107,19 +87,6 @@ const JoinDoctor = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Trial Days</label>
-                    <input
-                      type="number"
-                      placeholder="10"
-                      min="1"
-                      max="100"
-                      className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                      value={formData.trialDays}
-                      onChange={(e) => setFormData({...formData, trialDays: e.target.value})}
-                    />
-                    <p className="text-sm text-muted-foreground mt-1">Number of days for patient progression</p>
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium mb-2">Duration (weeks)</label>
                     <input
                       type="number"
@@ -155,11 +122,8 @@ const JoinDoctor = () => {
                 <button className="px-8 py-3 rounded-xl bg-muted text-muted-foreground font-semibold hover:scale-105 transition-transform">
                   Save Draft
                 </button>
-                <button 
-                  onClick={handleCreateTrial}
-                  className="px-8 py-3 rounded-xl bg-gradient-glow text-white font-semibold hover:scale-105 transition-transform shimmer"
-                >
-                  Create Trial 🚀
+                <button className="px-8 py-3 rounded-xl bg-gradient-glow text-white font-semibold hover:scale-105 transition-transform shimmer">
+                  Lock Schedule 🔒
                 </button>
               </div>
             </div>
