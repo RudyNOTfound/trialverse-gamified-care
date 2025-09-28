@@ -1,6 +1,48 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [selectedRegistration, setSelectedRegistration] = useState(null);
+  const [doctorForm, setDoctorForm] = useState({
+    name: '', email: '', phone: '', license: '', specialization: '', centreId: '', medicalHistory: ''
+  });
+  const [patientForm, setPatientForm] = useState({
+    name: '', email: '', phone: '', age: '', gender: '', healthStatus: '', medicalHistory: ''
+  });
+
+  const handleDoctorSubmit = () => {
+    localStorage.setItem('doctorRegistration', JSON.stringify(doctorForm));
+    alert('Doctor registration submitted successfully!');
+    setSelectedRegistration(null);
+    setDoctorForm({name: '', email: '', phone: '', license: '', specialization: '', centreId: '', medicalHistory: ''});
+  };
+
+  const handlePatientSubmit = () => {
+    localStorage.setItem('patientRegistration', JSON.stringify(patientForm));
+    alert('Patient registration submitted successfully!');
+    setSelectedRegistration(null);
+    setPatientForm({name: '', email: '', phone: '', age: '', gender: '', healthStatus: '', medicalHistory: ''});
+  };
+
+  const handleJoinAsDoctor = () => {
+    const doctorData = JSON.parse(localStorage.getItem('doctorRegistration') || '{}');
+    if (!doctorData.name || !doctorData.email || !doctorData.phone) {
+      alert('Not Allowed: Please complete doctor registration first (Name, Email, and Phone are required).');
+      return;
+    }
+    navigate('/join-doctor');
+  };
+
+  const handleJoinAsPatient = () => {
+    const patientData = JSON.parse(localStorage.getItem('patientRegistration') || '{}');
+    if (!patientData.name || !patientData.email || !patientData.phone) {
+      alert('Not Allowed: Please complete patient registration first (Name, Email, and Phone are required).');
+      return;
+    }
+    navigate('/join-patient');
+  };
   const features = [
     {
       title: "Better Care",
@@ -191,34 +233,271 @@ const Index = () => {
           ))}
         </div>
 
-        {/* Call to Action */}
+        {/* Registration Section */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 2, duration: 0.8 }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-card rounded-3xl p-12 max-w-2xl mx-auto">
+          <div className="bg-gradient-card rounded-3xl p-12 max-w-4xl mx-auto">
             <h3 className="text-3xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
               Ready to Start Your Journey?
             </h3>
             <p className="text-muted-foreground text-lg mb-8">
               Join thousands of participants making medical history while earning rewards
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            
+            {/* Registration Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-gradient-glow text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-lg transition-all shimmer"
+                onClick={() => setSelectedRegistration('doctor')}
+                className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all ${
+                  selectedRegistration === 'doctor' 
+                    ? 'bg-gradient-glow text-white shadow-lg' 
+                    : 'bg-background/50 text-foreground border-2 border-border hover:border-primary'
+                }`}
               >
-                Get Started Today 🚀
+                Register as Doctor 👨‍⚕️
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-background/50 text-foreground border-2 border-border px-8 py-4 rounded-2xl font-semibold text-lg hover:border-primary transition-all"
+                onClick={() => setSelectedRegistration('patient')}
+                className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all ${
+                  selectedRegistration === 'patient' 
+                    ? 'bg-gradient-glow text-white shadow-lg' 
+                    : 'bg-background/50 text-foreground border-2 border-border hover:border-primary'
+                }`}
               >
-                Learn More 📖
+                Register as Patient 🧍
+              </motion.button>
+            </div>
+
+            {/* Registration Forms */}
+            {selectedRegistration && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-left"
+              >
+                {selectedRegistration === 'doctor' && (
+                  <div className="space-y-6">
+                    <h4 className="text-xl font-semibold text-center mb-6">Doctor Registration Form</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Name</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your full name"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={doctorForm.name}
+                          onChange={(e) => setDoctorForm({...doctorForm, name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Email</label>
+                        <input
+                          type="email"
+                          placeholder="Enter your email"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={doctorForm.email}
+                          onChange={(e) => setDoctorForm({...doctorForm, email: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Phone</label>
+                        <input
+                          type="tel"
+                          placeholder="Enter your phone number"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={doctorForm.phone}
+                          onChange={(e) => setDoctorForm({...doctorForm, phone: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Medical License Number</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your license number"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={doctorForm.license}
+                          onChange={(e) => setDoctorForm({...doctorForm, license: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Specialization</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your specialization"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={doctorForm.specialization}
+                          onChange={(e) => setDoctorForm({...doctorForm, specialization: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Centre ID (Optional)</label>
+                        <input
+                          type="text"
+                          placeholder="Enter centre ID if applicable"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={doctorForm.centreId}
+                          onChange={(e) => setDoctorForm({...doctorForm, centreId: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Medical History</label>
+                      <textarea
+                        placeholder="Brief medical history and experience"
+                        rows={4}
+                        className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                        value={doctorForm.medicalHistory}
+                        onChange={(e) => setDoctorForm({...doctorForm, medicalHistory: e.target.value})}
+                      />
+                    </div>
+                    <div className="flex justify-center space-x-4">
+                      <button
+                        onClick={() => {
+                          setSelectedRegistration(null);
+                          setDoctorForm({name: '', email: '', phone: '', license: '', specialization: '', centreId: '', medicalHistory: ''});
+                        }}
+                        className="px-6 py-3 rounded-xl bg-muted text-muted-foreground font-semibold hover:scale-105 transition-transform"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleDoctorSubmit}
+                        className="px-8 py-3 rounded-xl bg-gradient-glow text-white font-semibold hover:scale-105 transition-transform shimmer"
+                      >
+                        Submit Registration
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {selectedRegistration === 'patient' && (
+                  <div className="space-y-6">
+                    <h4 className="text-xl font-semibold text-center mb-6">Patient Registration Form</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Name</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your full name"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={patientForm.name}
+                          onChange={(e) => setPatientForm({...patientForm, name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Email</label>
+                        <input
+                          type="email"
+                          placeholder="Enter your email"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={patientForm.email}
+                          onChange={(e) => setPatientForm({...patientForm, email: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Phone</label>
+                        <input
+                          type="tel"
+                          placeholder="Enter your phone number"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={patientForm.phone}
+                          onChange={(e) => setPatientForm({...patientForm, phone: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Age</label>
+                        <input
+                          type="number"
+                          placeholder="Enter your age"
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={patientForm.age}
+                          onChange={(e) => setPatientForm({...patientForm, age: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Gender</label>
+                        <select
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={patientForm.gender}
+                          onChange={(e) => setPatientForm({...patientForm, gender: e.target.value})}
+                        >
+                          <option value="">Select gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Health Status</label>
+                        <select
+                          className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                          value={patientForm.healthStatus}
+                          onChange={(e) => setPatientForm({...patientForm, healthStatus: e.target.value})}
+                        >
+                          <option value="">Select health status</option>
+                          <option value="healthy">Healthy</option>
+                          <option value="diabetic">Diabetic</option>
+                          <option value="polio">Polio</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Medical History</label>
+                      <textarea
+                        placeholder="Brief medical history and current conditions"
+                        rows={4}
+                        className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                        value={patientForm.medicalHistory}
+                        onChange={(e) => setPatientForm({...patientForm, medicalHistory: e.target.value})}
+                      />
+                    </div>
+                    <div className="flex justify-center space-x-4">
+                      <button
+                        onClick={() => {
+                          setSelectedRegistration(null);
+                          setPatientForm({name: '', email: '', phone: '', age: '', gender: '', healthStatus: '', medicalHistory: ''});
+                        }}
+                        className="px-6 py-3 rounded-xl bg-muted text-muted-foreground font-semibold hover:scale-105 transition-transform"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handlePatientSubmit}
+                        className="px-8 py-3 rounded-xl bg-gradient-glow text-white font-semibold hover:scale-105 transition-transform shimmer"
+                      >
+                        Submit Registration
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* Join Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleJoinAsDoctor}
+                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-lg transition-all"
+              >
+                Join as Doctor 👨‍⚕️
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleJoinAsPatient}
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-lg transition-all"
+              >
+                Join as Patient 🧍
               </motion.button>
             </div>
           </div>
