@@ -1,31 +1,91 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 const Progress = () => {
   const navigate = useNavigate();
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [trialDays, setTrialDays] = useState([]);
+  const [currentLevel, setCurrentLevel] = useState(1);
 
-  // Simulated trial days with Candy Crush-style progression
-  const trialDays = [
-    { day: 1, status: "completed", stars: 3, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 2, status: "completed", stars: 2, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 3, status: "completed", stars: 3, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 4, status: "completed", stars: 1, type: "medium", color: "from-blue-400 to-blue-600" },
-    { day: 5, status: "current", stars: 0, type: "medium", color: "from-primary to-primary-glow" },
-    { day: 6, status: "locked", stars: 0, type: "medium", color: "from-gray-400 to-gray-600" },
-    { day: 7, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 8, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 9, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 10, status: "locked", stars: 0, type: "boss", color: "from-purple-400 to-purple-600" },
-    { day: 11, status: "locked", stars: 0, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 12, status: "locked", stars: 0, type: "easy", color: "from-green-400 to-green-600" },
-    { day: 13, status: "locked", stars: 0, type: "medium", color: "from-blue-400 to-blue-600" },
-    { day: 14, status: "locked", stars: 0, type: "hard", color: "from-red-400 to-red-600" },
-    { day: 15, status: "locked", stars: 0, type: "boss", color: "from-purple-400 to-purple-600" },
-  ];
+  // Load trial data and progress on component mount
+  useEffect(() => {
+    const trialData = JSON.parse(localStorage.getItem('trialData') || '{}');
+    const savedProgress = JSON.parse(localStorage.getItem('patientProgress') || '{}');
+    
+    const totalDays = parseInt(trialData.trialDays) || 15;
+    const currentLevelFromStorage = savedProgress.currentLevel || 1;
+    
+    setCurrentLevel(currentLevelFromStorage);
+    
+    // Generate dynamic levels based on doctor's input
+    const generatedDays = [];
+    for (let i = 1; i <= totalDays; i++) {
+      let type, color;
+      if (i % 10 === 0) {
+        type = "boss";
+        color = "from-purple-400 to-purple-600";
+      } else if (i % 3 === 0) {
+        type = "hard";
+        color = "from-red-400 to-red-600";
+      } else if (i % 2 === 0) {
+        type = "medium";
+        color = "from-blue-400 to-blue-600";
+      } else {
+        type = "easy";
+        color = "from-green-400 to-green-600";
+      }
+
+      let status;
+      if (i < currentLevelFromStorage) {
+        status = "completed";
+      } else if (i === currentLevelFromStorage) {
+        status = "current";
+        color = "from-primary to-primary-glow";
+      } else {
+        status = "locked";
+      }
+
+      generatedDays.push({
+        day: i,
+        status,
+        stars: status === "completed" ? Math.floor(Math.random() * 3) + 1 : 0,
+        type,
+        color
+      });
+    }
+    
+    setTrialDays(generatedDays);
+  }, []);
+
+  const handleCompleteLevel = () => {
+    if (currentLevel <= trialDays.length) {
+      const newCurrentLevel = currentLevel + 1;
+      setCurrentLevel(newCurrentLevel);
+      
+      // Update trialDays state
+      const updatedDays = trialDays.map(day => {
+        if (day.day === currentLevel) {
+          return { ...day, status: "completed", stars: Math.floor(Math.random() * 3) + 1 };
+        } else if (day.day === newCurrentLevel) {
+          return { ...day, status: "current", color: "from-primary to-primary-glow" };
+        }
+        return day;
+      });
+      
+      setTrialDays(updatedDays);
+      
+      // Save progress to localStorage
+      localStorage.setItem('patientProgress', JSON.stringify({ currentLevel: newCurrentLevel }));
+      setSelectedLevel(null);
+    }
+  };
+
+  const handleCancelLevel = () => {
+    setSelectedLevel(null);
+  };
 
   const getStatusIcon = (status: string, type: string) => {
     if (status === "completed") return "✅";
@@ -81,19 +141,21 @@ const Progress = () => {
           className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
         >
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-green-500">4</div>
+            <div className="text-2xl font-bold text-green-500">{currentLevel - 1}</div>
             <div className="text-sm text-muted-foreground">Days Completed</div>
           </div>
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-gold">9</div>
+            <div className="text-2xl font-bold text-gold">
+              {trialDays.filter(day => day.status === "completed").reduce((sum, day) => sum + day.stars, 0)}
+            </div>
             <div className="text-sm text-muted-foreground">Stars Earned</div>
           </div>
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-primary">1</div>
+            <div className="text-2xl font-bold text-primary">{currentLevel}</div>
             <div className="text-sm text-muted-foreground">Current Day</div>
           </div>
           <div className="bg-gradient-card rounded-2xl p-4 text-center">
-            <div className="text-2xl font-bold text-purple-500">11</div>
+            <div className="text-2xl font-bold text-purple-500">{trialDays.length - currentLevel + 1}</div>
             <div className="text-sm text-muted-foreground">Days Remaining</div>
           </div>
         </motion.div>
@@ -253,22 +315,42 @@ const Progress = () => {
                   }
                 </p>
                 <div className="space-y-3">
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90"
-                    onClick={() => setSelectedLevel(null)}
-                  >
-                    {trialDays.find(d => d.day === selectedLevel)?.status === "completed" 
-                      ? "Review Results" 
-                      : "Start Day"
-                    }
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => setSelectedLevel(null)}
-                  >
-                    Close
-                  </Button>
+                  {trialDays.find(d => d.day === selectedLevel)?.status === "current" ? (
+                    <>
+                      <Button 
+                        className="w-full bg-green-500 hover:bg-green-600 text-white"
+                        onClick={handleCompleteLevel}
+                      >
+                        ✅ Complete Level
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full border-red-500 text-red-500 hover:bg-red-50"
+                        onClick={handleCancelLevel}
+                      >
+                        ❌ Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button 
+                        className="w-full bg-primary hover:bg-primary/90"
+                        onClick={() => setSelectedLevel(null)}
+                      >
+                        {trialDays.find(d => d.day === selectedLevel)?.status === "completed" 
+                          ? "Review Results" 
+                          : "View Details"
+                        }
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => setSelectedLevel(null)}
+                      >
+                        Close
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

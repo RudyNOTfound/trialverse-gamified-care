@@ -7,7 +7,8 @@ const JoinDoctor = () => {
     trialName: "",
     duration: "",
     participants: "",
-    description: ""
+    description: "",
+    trialDays: ""
   });
 
   const tabs = [
@@ -106,6 +107,16 @@ const JoinDoctor = () => {
                       onChange={(e) => setFormData({...formData, participants: e.target.value})}
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Trial Days</label>
+                    <input
+                      type="number"
+                      placeholder="15"
+                      className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                      value={formData.trialDays}
+                      onChange={(e) => setFormData({...formData, trialDays: e.target.value})}
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Description</label>
@@ -122,7 +133,14 @@ const JoinDoctor = () => {
                 <button className="px-8 py-3 rounded-xl bg-muted text-muted-foreground font-semibold hover:scale-105 transition-transform">
                   Save Draft
                 </button>
-                <button className="px-8 py-3 rounded-xl bg-gradient-glow text-white font-semibold hover:scale-105 transition-transform shimmer">
+                <button 
+                  className="px-8 py-3 rounded-xl bg-gradient-glow text-white font-semibold hover:scale-105 transition-transform shimmer"
+                  onClick={() => {
+                    // Save trial data to localStorage
+                    localStorage.setItem('trialData', JSON.stringify(formData));
+                    alert('Trial scheduled successfully! Patients can now see their progress levels.');
+                  }}
+                >
                   Lock Schedule 🔒
                 </button>
               </div>
