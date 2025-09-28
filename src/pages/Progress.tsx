@@ -20,36 +20,22 @@ const Progress = () => {
     
     setCurrentLevel(currentLevelFromStorage);
     
-    // Generate dynamic levels with alternating content schedule
+    // Generate dynamic levels based on doctor's input
     const generatedDays = [];
     for (let i = 1; i <= totalDays; i++) {
-      let type, color, contentType;
-      
-      // Alternating content schedule: Trial → Video → Trial → Quiz → ...
-      const cyclePosition = (i - 1) % 4;
-      if (cyclePosition === 0) {
-        contentType = "trial";
-        type = "trial";
-        color = "from-green-400 to-green-600";
-      } else if (cyclePosition === 1) {
-        contentType = "video";
-        type = "video";
-        color = "from-blue-400 to-blue-600";
-      } else if (cyclePosition === 2) {
-        contentType = "trial";
-        type = "trial";
-        color = "from-green-400 to-green-600";
-      } else {
-        contentType = "quiz";
-        type = "quiz";
-        color = "from-orange-400 to-orange-600";
-      }
-
-      // Special boss levels every 10 days
+      let type, color;
       if (i % 10 === 0) {
         type = "boss";
-        contentType = "boss";
         color = "from-purple-400 to-purple-600";
+      } else if (i % 3 === 0) {
+        type = "hard";
+        color = "from-red-400 to-red-600";
+      } else if (i % 2 === 0) {
+        type = "medium";
+        color = "from-blue-400 to-blue-600";
+      } else {
+        type = "easy";
+        color = "from-green-400 to-green-600";
       }
 
       let status;
@@ -67,7 +53,6 @@ const Progress = () => {
         status,
         stars: status === "completed" ? Math.floor(Math.random() * 3) + 1 : 0,
         type,
-        contentType,
         color
       });
     }
@@ -111,21 +96,11 @@ const Progress = () => {
 
   const getTypeEmoji = (type: string) => {
     switch (type) {
-      case "trial": return "🧪";
-      case "video": return "🎥";
-      case "quiz": return "❓";
+      case "easy": return "🟢";
+      case "medium": return "🔵";
+      case "hard": return "🔴";
       case "boss": return "👑";
       default: return "⚪";
-    }
-  };
-
-  const getContentDescription = (contentType: string) => {
-    switch (contentType) {
-      case "trial": return "Trial Day";
-      case "video": return "Video Lecture";
-      case "quiz": return "Assessment Quiz";
-      case "boss": return "Boss Challenge";
-      default: return "Activity";
     }
   };
 
@@ -304,8 +279,8 @@ const Progress = () => {
                   {/* Day Label */}
                   <div className="mt-2 text-center">
                     <div className="text-sm font-semibold">Day {day.day}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {getContentDescription(day.contentType)}
+                    <div className="text-xs text-muted-foreground capitalize">
+                      {day.type} {day.type === "boss" ? "Challenge" : "Task"}
                     </div>
                   </div>
                 </motion.div>
@@ -333,17 +308,12 @@ const Progress = () => {
                 <div className="text-6xl mb-4">
                   {trialDays.find(d => d.day === selectedLevel)?.status === "completed" ? "✅" : "🎯"}
                 </div>
-                <div className="mb-6">
-                  <div className="text-4xl mb-2">
-                    {getTypeEmoji(trialDays.find(d => d.day === selectedLevel)?.type || '')}
-                  </div>
-                  <p className="text-muted-foreground">
-                    {trialDays.find(d => d.day === selectedLevel)?.status === "completed" 
-                      ? `Great job! You've completed this ${getContentDescription(trialDays.find(d => d.day === selectedLevel)?.contentType || '')}.`
-                      : `Ready to start today's ${getContentDescription(trialDays.find(d => d.day === selectedLevel)?.contentType || '')}?`
-                    }
-                  </p>
-                </div>
+                <p className="text-muted-foreground mb-6">
+                  {trialDays.find(d => d.day === selectedLevel)?.status === "completed" 
+                    ? "Great job! You've completed this day's activities."
+                    : "Ready to start today's trial activities?"
+                  }
+                </p>
                 <div className="space-y-3">
                   {trialDays.find(d => d.day === selectedLevel)?.status === "current" ? (
                     <>

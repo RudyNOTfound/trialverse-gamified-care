@@ -4,15 +4,6 @@ import { useNavigate } from "react-router-dom";
 const JoinPatient = () => {
   const navigate = useNavigate();
 
-  const checkRegistrationStatus = () => {
-    const patientData = JSON.parse(localStorage.getItem('patientRegistration') || '{}');
-    if (!patientData.name || !patientData.email || !patientData.phone) {
-      alert('Please complete patient registration first. Missing required fields: Name, Email, and Phone.');
-      return false;
-    }
-    return true;
-  };
-
   const buttons = [
     { 
       title: "Profile", 
@@ -34,11 +25,7 @@ const JoinPatient = () => {
       title: "Progress", 
       icon: "📈", 
       description: "View your trial journey",
-      action: () => {
-        if (checkRegistrationStatus()) {
-          navigate("/progress");
-        }
-      },
+      action: () => navigate("/progress"),
       gradient: "bg-gradient-to-br from-primary/20 to-primary-glow/20",
       hoverGradient: "hover:from-primary/30 hover:to-primary-glow/30"
     },
