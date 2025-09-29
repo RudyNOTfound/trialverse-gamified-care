@@ -1,5 +1,16 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+type PatientCondition = "Asthmatic" | "Hypertensive" | "Smoker";
+
+interface Patient {
+  id: number;
+  name: string;
+  condition: PatientCondition;
+  distance: number;
+}
 
 const JoinDoctor = () => {
   const [activeTab, setActiveTab] = useState("schedule");
@@ -23,6 +34,55 @@ const JoinDoctor = () => {
     options: ["", "", ""],
     correctAnswer: 0
   });
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [selectedCondition, setSelectedCondition] = useState<PatientCondition | null>(null);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+
+  // Generate 100 patients
+  const allPatients = useMemo(() => {
+    const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "William", "Barbara",
+      "David", "Elizabeth", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen",
+      "Christopher", "Nancy", "Daniel", "Lisa", "Matthew", "Betty", "Anthony", "Margaret", "Mark", "Sandra",
+      "Donald", "Ashley", "Steven", "Kimberly", "Paul", "Emily", "Andrew", "Donna", "Joshua", "Michelle",
+      "Kenneth", "Carol", "Kevin", "Amanda", "Brian", "Dorothy", "George", "Melissa", "Timothy", "Deborah"];
+    
+    const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+      "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
+      "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson",
+      "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores",
+      "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts"];
+    
+    const conditions: PatientCondition[] = ["Asthmatic", "Hypertensive", "Smoker"];
+    
+    const patients: Patient[] = [];
+    for (let i = 0; i < 100; i++) {
+      patients.push({
+        id: i + 1,
+        name: `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`,
+        condition: conditions[Math.floor(Math.random() * conditions.length)],
+        distance: Math.floor(Math.random() * 50) + 1 // 1-50 km
+      });
+    }
+    return patients;
+  }, []);
+
+  const handleFilterPatients = () => {
+    if (!selectedCondition) return;
+    
+    // Filter by condition and sort by distance
+    const matched = allPatients
+      .filter(p => p.condition === selectedCondition)
+      .sort((a, b) => a.distance - b.distance);
+    
+    const notMatched = allPatients
+      .filter(p => p.condition !== selectedCondition)
+      .sort((a, b) => a.distance - b.distance);
+    
+    // Take top 50: prioritize condition match, then by distance
+    const top50 = [...matched, ...notMatched].slice(0, 50);
+    setFilteredPatients(top50);
+    setFilterDialogOpen(false);
+  };
 
   const tabs = [
     { id: "schedule", label: "Schedule Trial", icon: "📅" },
@@ -170,8 +230,8 @@ const JoinDoctor = () => {
           {activeTab === "patients" && (
             <div className="bg-gradient-card rounded-3xl p-8">
               <h2 className="text-2xl font-semibold mb-6">Search for Patients</h2>
-              <div className="flex flex-wrap justify-center gap-4">
-                {['Randomize Patients', 'Complete Trial', 'Filter Eligible Patients', 'Group A', 'Group B'].map((buttonLabel, index) => (
+              <div className="flex flex-wrap justify-center gap-4 mb-8">
+                {['Randomize Patients', 'Complete Trial', 'Group A', 'Group B'].map((buttonLabel, index) => (
                   <motion.button
                     key={buttonLabel}
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -182,6 +242,87 @@ const JoinDoctor = () => {
                     {buttonLabel}
                   </motion.button>
                 ))}
+                
+                <Dialog open={filterDialogOpen} onOpenChange={setFilterDialogOpen}>
+                  <DialogTrigger asChild>
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-gradient-glow text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:scale-105 transition-transform shimmer"
+                    >
+                      Filter Eligible Patients
+                    </motion.button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-background border-border">
+                    <DialogHeader>
+                      <DialogTitle>Select Patient Condition</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <Select value={selectedCondition || ""} onValueChange={(value) => setSelectedCondition(value as PatientCondition)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Choose a condition" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Asthmatic">Asthmatic</SelectItem>
+                          <SelectItem value="Hypertensive">Hypertensive</SelectItem>
+                          <SelectItem value="Smoker">Smoker</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <button
+                        onClick={handleFilterPatients}
+                        disabled={!selectedCondition}
+                        className="w-full bg-gradient-glow text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shimmer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Apply Filter
+                      </button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* Patient Datasets Display */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* All Patients */}
+                <div className="bg-background/50 rounded-2xl p-6 border border-border">
+                  <h3 className="text-xl font-semibold mb-4">All Patients ({allPatients.length})</h3>
+                  <div className="overflow-y-auto max-h-[500px] space-y-2">
+                    {allPatients.map((patient) => (
+                      <div key={patient.id} className="flex justify-between items-center p-3 bg-gradient-card rounded-lg border border-border/50">
+                        <div className="flex-1">
+                          <p className="font-medium">{patient.name}</p>
+                          <p className="text-sm text-muted-foreground">{patient.condition}</p>
+                        </div>
+                        <div className="text-sm font-semibold text-primary">{patient.distance} km</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Filtered Patients */}
+                <div className="bg-background/50 rounded-2xl p-6 border border-border">
+                  <h3 className="text-xl font-semibold mb-4">
+                    Filtered Patients ({filteredPatients.length})
+                    {selectedCondition && <span className="text-primary"> - {selectedCondition}</span>}
+                  </h3>
+                  {filteredPatients.length > 0 ? (
+                    <div className="overflow-y-auto max-h-[500px] space-y-2">
+                      {filteredPatients.map((patient) => (
+                        <div key={patient.id} className="flex justify-between items-center p-3 bg-gradient-card rounded-lg border border-border/50">
+                          <div className="flex-1">
+                            <p className="font-medium">{patient.name}</p>
+                            <p className="text-sm text-muted-foreground">{patient.condition}</p>
+                          </div>
+                          <div className="text-sm font-semibold text-primary">{patient.distance} km</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-[200px] text-muted-foreground">
+                      <p>Click "Filter Eligible Patients" to see filtered results</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
