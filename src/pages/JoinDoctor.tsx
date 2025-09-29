@@ -138,6 +138,8 @@ const JoinDoctor = () => {
                   onClick={() => {
                     // Save trial data to localStorage
                     localStorage.setItem('trialData', JSON.stringify(formData));
+                    // Reset patient progress to Level 1 whenever new trial days are set
+                    localStorage.setItem('patientProgress', JSON.stringify({ currentLevel: 1, completedLevels: [] }));
                     alert('Trial scheduled successfully! Patients can now see their progress levels.');
                   }}
                 >
@@ -149,28 +151,19 @@ const JoinDoctor = () => {
 
           {activeTab === "patients" && (
             <div className="bg-gradient-card rounded-3xl p-8">
-              <h2 className="text-2xl font-semibold mb-6">Find Qualified Patients</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {['Age: 25-65', 'Condition: Diabetes', 'Location: NYC'].map((criteria, index) => (
-                  <motion.div
-                    key={criteria}
+              <h2 className="text-2xl font-semibold mb-6">Search for Patients</h2>
+              <div className="flex flex-wrap justify-center gap-4">
+                {['Randomize Patients', 'Complete Trial', 'Filter Eligible Patients', 'Group A', 'Group B'].map((buttonLabel, index) => (
+                  <motion.button
+                    key={buttonLabel}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-background/50 p-4 rounded-2xl border border-border text-center"
+                    className="bg-gradient-glow text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:scale-105 transition-transform shimmer"
                   >
-                    <div className="text-3xl mb-2">🎯</div>
-                    <p className="font-semibold">{criteria}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {Math.floor(Math.random() * 50 + 10)} matches
-                    </p>
-                  </motion.div>
+                    {buttonLabel}
+                  </motion.button>
                 ))}
-              </div>
-              <div className="mt-8 text-center">
-                <button className="bg-gradient-glow text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:scale-105 transition-transform shimmer">
-                  Search Patients 🔍
-                </button>
               </div>
             </div>
           )}
