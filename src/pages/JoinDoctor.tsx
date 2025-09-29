@@ -10,6 +10,19 @@ const JoinDoctor = () => {
     description: "",
     trialDays: ""
   });
+  const [uploadedVideos, setUploadedVideos] = useState(() => {
+    const saved = localStorage.getItem('doctorVideos');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [quizQuestions, setQuizQuestions] = useState(() => {
+    const saved = localStorage.getItem('doctorQuizzes');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [newQuestion, setNewQuestion] = useState({
+    question: "",
+    options: ["", "", ""],
+    correctAnswer: 0
+  });
 
   const tabs = [
     { id: "schedule", label: "Schedule Trial", icon: "📅" },
@@ -140,6 +153,11 @@ const JoinDoctor = () => {
                     localStorage.setItem('trialData', JSON.stringify(formData));
                     // Reset patient progress to Level 1 whenever new trial days are set
                     localStorage.setItem('patientProgress', JSON.stringify({ currentLevel: 1, completedLevels: [] }));
+                    // Reset doctor videos and quizzes when trial days change
+                    localStorage.setItem('doctorVideos', JSON.stringify([]));
+                    localStorage.setItem('doctorQuizzes', JSON.stringify([]));
+                    setUploadedVideos([]);
+                    setQuizQuestions([]);
                     alert('Trial scheduled successfully! Patients can now see their progress levels.');
                   }}
                 >
@@ -170,9 +188,56 @@ const JoinDoctor = () => {
 
           {activeTab === "tutorials" && (
             <div className="bg-gradient-card rounded-3xl p-8">
-              <h2 className="text-2xl font-semibold mb-6">Video Tutorials</h2>
+              <h2 className="text-2xl font-semibold mb-6">Video Lectures</h2>
+              
+              {/* Video Upload Section */}
+              <div className="mb-8">
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const videoURL = URL.createObjectURL(file);
+                      const newVideo = {
+                        id: Date.now(),
+                        name: file.name,
+                        url: videoURL,
+                        size: (file.size / (1024 * 1024)).toFixed(2) + ' MB'
+                      };
+                      const updatedVideos = [...uploadedVideos, newVideo];
+                      setUploadedVideos(updatedVideos);
+                      localStorage.setItem('doctorVideos', JSON.stringify(updatedVideos));
+                    }
+                  }}
+                  className="mb-4 block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-glow file:text-white hover:file:scale-105 file:transition-transform"
+                />
+              </div>
+
+              {/* Uploaded Videos Display */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {videos.map((video, index) => (
+                {uploadedVideos.map((video, index) => (
+                  <motion.div
+                    key={video.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-background/50 rounded-2xl overflow-hidden border border-border hover:border-primary transition-colors"
+                  >
+                    <video
+                      src={video.url}
+                      controls
+                      className="w-full aspect-video"
+                    />
+                    <div className="p-4">
+                      <h3 className="font-semibold text-lg mb-1">{video.name}</h3>
+                      <p className="text-sm text-muted-foreground">Size: {video.size}</p>
+                    </div>
+                  </motion.div>
+                ))}
+                
+                {/* Default videos if no uploads */}
+                {uploadedVideos.length === 0 && videos.map((video, index) => (
                   <motion.div
                     key={video.title}
                     initial={{ opacity: 0, y: 20 }}
@@ -196,42 +261,86 @@ const JoinDoctor = () => {
           {activeTab === "quizzes" && (
             <div className="bg-gradient-card rounded-3xl p-8">
               <h2 className="text-2xl font-semibold mb-6">Create Assessment Quiz</h2>
-              <div className="space-y-6">
+              
+              {/* Question Creation Form */}
+              <div className="space-y-6 mb-8">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Quiz Title</label>
-                  <input
-                    type="text"
-                    placeholder="Patient Knowledge Assessment"
-                    className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Question 1</label>
+                  <label className="block text-sm font-medium mb-2">Question</label>
                   <input
                     type="text"
                     placeholder="Enter your question..."
+                    value={newQuestion.question}
+                    onChange={(e) => setNewQuestion({...newQuestion, question: e.target.value})}
                     className="w-full p-4 rounded-xl border-2 border-border bg-background/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                   />
-                  <div className="mt-3 space-y-2">
-                    {['Option A', 'Option B', 'Option C'].map((option, index) => (
-                      <input
-                        key={option}
-                        type="text"
-                        placeholder={option}
-                        className="w-full p-3 rounded-lg border border-border bg-background/30 focus:border-primary transition-colors"
-                      />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Answer Options</label>
+                  <div className="space-y-2">
+                    {newQuestion.options.map((option, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="correctAnswer"
+                          checked={newQuestion.correctAnswer === index}
+                          onChange={() => setNewQuestion({...newQuestion, correctAnswer: index})}
+                          className="text-primary"
+                        />
+                        <input
+                          type="text"
+                          placeholder={`Option ${String.fromCharCode(65 + index)}`}
+                          value={option}
+                          onChange={(e) => {
+                            const updatedOptions = [...newQuestion.options];
+                            updatedOptions[index] = e.target.value;
+                            setNewQuestion({...newQuestion, options: updatedOptions});
+                          }}
+                          className="flex-1 p-3 rounded-lg border border-border bg-background/30 focus:border-primary transition-colors"
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <button className="text-primary font-semibold hover:underline">
-                    + Add Question
-                  </button>
-                  <button className="bg-gradient-glow text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shimmer">
-                    Create Quiz ✨
+                <div className="flex justify-end">
+                  <button 
+                    onClick={() => {
+                      if (newQuestion.question && newQuestion.options.every(opt => opt.trim())) {
+                        const updatedQuestions = [...quizQuestions, {...newQuestion, id: Date.now()}];
+                        setQuizQuestions(updatedQuestions);
+                        localStorage.setItem('doctorQuizzes', JSON.stringify(updatedQuestions));
+                        setNewQuestion({ question: "", options: ["", "", ""], correctAnswer: 0 });
+                      }
+                    }}
+                    className="bg-gradient-glow text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shimmer"
+                  >
+                    Add Question ✨
                   </button>
                 </div>
               </div>
+
+              {/* Created Questions Display */}
+              {quizQuestions.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Created Questions</h3>
+                  {quizQuestions.map((question, index) => (
+                    <motion.div
+                      key={question.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-background/50 rounded-xl p-4 border border-border"
+                    >
+                      <h4 className="font-semibold mb-2">Q{index + 1}: {question.question}</h4>
+                      <div className="space-y-1">
+                        {question.options.map((option, optIndex) => (
+                          <div key={optIndex} className={`text-sm ${optIndex === question.correctAnswer ? 'text-primary font-semibold' : 'text-muted-foreground'}`}>
+                            {String.fromCharCode(65 + optIndex)}. {option} {optIndex === question.correctAnswer && '✓'}
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </motion.div>
